@@ -39,6 +39,7 @@ proc il_main: string =
 when isMainModule:
   import sequtils, zero_functional, algorithm, unpack, print
   {.hint[XDeclaredButNotUsed]: off.}
+  {.hint[DuplicateModuleImport]: off.}
   {.warning[UnusedImport]: off.}
   let inputRaw = il_main()
   let input = inputRaw.splitLines
