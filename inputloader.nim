@@ -1,7 +1,7 @@
 import os, strutils, httpclient
 
 type il_CookieTxtEntry {.pure.} = enum
-  il_Host, il_Subdomains, il_Path, IsSecure, il_Expiry, il_Name, il_Value
+  il_Host, il_Subdomains, il_Path, il_IsSecure, il_Expiry, il_Name, il_Value
 
 proc il_cookies: HttpHeaders =
   ## reads netscape cookie into HttpHeaders object
@@ -43,3 +43,6 @@ when isMainModule:
   {.warning[UnusedImport]: off.}
   let inputRaw = il_main()
   let input = inputRaw.splitLines
+else:
+  {.error: "inputloader works only by including it".}
+

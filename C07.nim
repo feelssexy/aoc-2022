@@ -39,11 +39,18 @@ type Dir = ref object
   files: Table[string, int]
   calcSize: int
 
+#proc `$`*(dir: Dir): string =
+#  result.add "Dir("
+#  for fName, fValue in dir[].fieldPairs():
+#    result.add "$#: $#, " % [fName, $fValue]
+#  result = result.strip.strip(chars = {','}) & ")"
+
 proc `$`*(dir: Dir): string =
-  result.add "Dir("
-  for fName, fValue in dir[].fieldPairs():
-    result.add "$#: $#, " % [fName, $fValue]
-  result = result.strip.strip(chars = {','}) & ")"
+  result.add "$#/ ($#)" % [dir.name, $dir.calcSize]
+  for filename, size in dir.files.pairs:
+    result.add "\n  $#: $#" % [filename, $size]
+  for subdir in dir.children:
+    result.add "\n" & indent($subdir, 2)
 
 proc newDir(name: string): Dir =
   Dir(name: name, children: @[], files: initTable[string, int](), calcSize: -1)
@@ -106,8 +113,8 @@ block part1:
   echo allDirs --> filter(it.name == "/")
   #print rootDir
   for dir in allDirs:
-    echo "Directory: " & $dir
     if dir.calcSize <= 100_000:
+      echo "Directory: " & $dir
       i += dir.calcSize
     
   print i
