@@ -96,19 +96,25 @@ block part2:
   let maxRow = inputRaw.strip.count('\n')
 
   var i = 0
-#  for col in 0..maxCol:
-#    for row in 0..maxRow:
-  for col in 0..0:
-    for row in 0..0:
+  var i_coords = (-1, -1)
+  for col in 0..maxCol:
+    for row in 0..maxRow:
+#  for col in 2..2:
+#    for row in 3..3:
+#  for col in 1..1:
+#    for row in 2..2:
       let x = input[row][col]
 
       var ii = 1
-      ii *= (if (let f = (0..row-1).mapIt(input[it][col] < x).find(false); f != -1): f + 1 else: row)
-      ii *= (if (let f = (row+1..maxRow).mapIt(input[it][col] < x).find(false); f != -1): f + 1 else: maxRow - row - 1)
-      ii *= (if (let f = (0..col-1).mapIt(input[row][it] < x).find(false); f != -1): f + 1 else: col)
-      ii *= (if (let f = (col+1..maxCol).mapIt(input[row][it] < x).find(false); f != -1): f + 1 else: maxCol - col - 1)
+      ii *= (if (let f = (0..row-1).toSeq.reversed.mapIt(input[it][col] < x).find(false); f != -1): f + 1 else: row)
+      ii *= (if (let f = (row+1..maxRow).mapIt(input[it][col] < x).find(false); f != -1): f + 1 else: maxRow - row - 0)
+      ii *= (if (let f = (0..col-1).toSeq.reversed.mapIt(input[row][it] < x).find(false); f != -1): f + 1 else: col)
+      ii *= (if (let f = (col+1..maxCol).mapIt(input[row][it] < x).find(false); f != -1): f + 1 else: maxCol - col - 0)
+
       if ii > i:
+        i_coords = (col, row)
         i = ii
   
   print i
+  print i_coords
 
