@@ -18,23 +18,27 @@ proc drawField() =
 proc fieldDimensions(moves: seq[Move]): (int, int, int, int) =
   # (origin_x, origin_y, w, h), origin bottom-left
   var pos = (0, 0)
+  var upperBounds = (0, 0)
+  var lowerBounds = (0, 0)
   for m in moves:
-    let i = (if m.dir in {Dir.U, D}c
-    case m.dir
-    of Dir.U:
-      pos[1] += m.dist
-    of Dir.R:
-      pos[0] += m.dist
-    of Dir.D:
-      result[3] -= m.dist
-      result[1] -= m.dist
-    of Dir.L:
-      result[2] -= m.dist
-      result[0] -= m.dist
+    let x = (if m.dir in {Dir.U, R}: 1 else: -1)
+    if m.dir in {Dir.U, D}:
+      pos[1] += x * m.dist
+    else:
+      pos[0] += x * m.dist
+    upperBounds = (max(pos[0], upperBounds[0]), max(pos[1], upperBounds[1]))
+    lowerBounds = (min(pos[0], lowerBounds[0]), min(pos[1], lowerBounds[1]))
+  return (
+    -lowerBounds[0],
+    -lowerBounds[1],
+    upperBounds[0] - lowerBounds[0],
+    upperBounds[1] - lowerBounds[1]
+  )
     
     #[
     # smh nim isn't smart enough for this
     # this code is pretty wrong for getting dimensions actually
+    let x = (if m.dir in {Dir.U, R}: 1 else: -1}
     let i = (if m.dir in {Dir.U, D}: 1 else: 0)
     result[i+2] += x * m.dist
     if m.dir in {Dir.U, R}:
@@ -48,13 +52,49 @@ let moves: seq[(Dir, int)] = collect:
     let splt = line.split
     (parseEnum[Dir](splt[0]), splt[1].parseInt)
 
-echo fieldDimensions(moves[0..<3])
+echo fieldDimensions(moves)
+
+#let gamer = [1, 2, 3]
+#
+# leaves the compiler flabbergasted
+#let gamers = toSeq:
+#  (iterator: string =
+#    for i in gamer: yield $i)()
 
 block part1:
-  var i = 0
   echo moves[0..<5]
+  
+  {.warning[EachIdentIsTuple]: off.}
+  var tailPositions: seq[(int, int)]
+  var pos, lastPos = (0, 0)
+  var tailPos = (0, 0)
+  #for m in moves:
+  for m in moves[0..<5]:
+    let x = (if m.dir in {Dir.U, R}: 1 else: -1)
+    for i in 0..<m.dist:
+      if m.dir in {Dir.U, D}:
+        pos[1] += x
+      else:
+        pos[0] += x
 
-  echo i
+      let dist = abs(pos[0] - tailPos[0]) + abs(pos[1] - tailPos[1])
+      print dist
+      let diff0 = pos[0] - lastPos[0]
+      let diff1 = pos[1] - lastPos[1]
+      let tailDiff0 = pos[0] - tailPos[0]
+      let tailDiff1 = pos[1] - tailPos[1]
+      print diff0, diff1
+      let diag = diff0 != 0 and diff1 != 0
+      doAssert not (dist > 2)
+
+      if dist == 2:
+        tailPos = lastPos
+
+      lastPos = pos
+        
+      print pos, tailPos
+
+  echo tailPositions.len
 
 block part2:
   var i = 0
